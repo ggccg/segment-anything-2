@@ -20,6 +20,9 @@ NO_OBJ_SCORE = -1024.0
 
 
 class SAM2Base(torch.nn.Module):
+    PromptEncoder = staticmethod(PromptEncoder)
+    MaskDecoder = staticmethod(MaskDecoder)
+
     def __init__(
         self,
         image_encoder,
@@ -205,7 +208,7 @@ class SAM2Base(torch.nn.Module):
 
         # build PromptEncoder and MaskDecoder from SAM
         # (their hyperparameters like `mask_in_chans=16` are from SAM code)
-        self.sam_prompt_encoder = PromptEncoder(
+        self.sam_prompt_encoder = self.PromptEncoder(
             embed_dim=self.sam_prompt_embed_dim,
             image_embedding_size=(
                 self.sam_image_embedding_size,
@@ -214,7 +217,7 @@ class SAM2Base(torch.nn.Module):
             input_image_size=(self.image_size, self.image_size),
             mask_in_chans=16,
         )
-        self.sam_mask_decoder = MaskDecoder(
+        self.sam_mask_decoder = self.MaskDecoder(
             num_multimask_outputs=3,
             transformer=TwoWayTransformer(
                 depth=2,
